@@ -68,8 +68,8 @@ int main (void){
 		ars_predict(&filter_roll, MPU6050_getGyroRoll_rad() , dt);  // Kalman predict
 		acc_tmp = -(atan2(-MPU6050_getAccel_z(), MPU6050_getAccel_y())-(3.14159/2.0)); /* calculate accel angle */
 	    roll_angle = ars_update(&filter_roll, acc_tmp);        // Kalman update + result (angle)
-	    memcpy(angle, &roll_angle, sizeof(roll_angle));
-	    UARTSend( (uint8_t *) angle, 10);
-	    UARTSend( (uint8_t *) crlf, 2);
+	    memcpy(angle, &roll_angle, sizeof(roll_angle));		   // convert to char array
+	    UARTSend( (uint8_t *) angle, 10);					   // print
+	    UARTSend( (uint8_t *) crlf, 2);						   // \n \r
 	}
 }
