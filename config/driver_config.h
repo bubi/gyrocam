@@ -15,6 +15,7 @@
 #define CONFIG_ENABLE_DRIVER_I2C						1
 #define CONFIG_I2C_DEFAULT_I2C_IRQHANDLER				1
 #define CONFIG_ENABLE_DRIVER_UART                       1
+#define CONFIG_ENABLE_DRIVER_CLKCONFIG					1
 
  /* DRIVER_CONFIG_H_ */
 #endif

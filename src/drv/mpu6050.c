@@ -63,7 +63,7 @@ uint8_t MPU6050_whoami(){
 
 	uint8_t state;
 
-	I2CWriteLength 		= 1;
+	I2CWriteLength 		= 2;
 	I2CReadLength		= 1;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_WHO_AM_I;
@@ -81,7 +81,7 @@ uint8_t MPU6050_getValue(sMPU_Value* sValue){
 
 	uint8_t state;
 
-	I2CWriteLength 		= 1;
+	I2CWriteLength 		= 2;
 	I2CReadLength		= 14;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_XOUT_H;
@@ -100,7 +100,7 @@ float MPU6050_getGyroRoll_rad(){
 	uint16_t tmp;
 	uint8_t state;
 
-	I2CWriteLength 		= 1;
+	I2CWriteLength 		= 2;
 	I2CReadLength		= 2;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_XOUT_H;
@@ -119,7 +119,7 @@ float MPU6050_getAccel_y(){
 	uint16_t tmp;
 	uint8_t state;
 
-	I2CWriteLength 		= 1;
+	I2CWriteLength 		= 2;
 	I2CReadLength		= 2;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_YOUT_H;
@@ -138,7 +138,7 @@ float MPU6050_getAccel_z(){
 	uint16_t tmp;
 	uint8_t state;
 
-	I2CWriteLength 		= 1;
+	I2CWriteLength 		= 2;
 	I2CReadLength		= 2;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_ZOUT_H;
