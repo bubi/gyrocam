@@ -32,8 +32,18 @@ uint8_t MPU6050_init() {
 	I2CWriteLength 		= 3;
 	I2CReadLength		= 0;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
+	I2CMasterBuffer[1] 	= MPU6050_RA_CONFIG;
+	I2CMasterBuffer[2] 	= 0b00000011; // Lowpass
+
+	state = I2CEngine();
+	if(state != I2C_OK) return 1;
+
+
+	I2CWriteLength 		= 3;
+	I2CReadLength		= 0;
+	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_PWR_MGMT_1;
-	I2CMasterBuffer[2] 	= 0b00000011; // wakeup and set clock to x-axis gyro;
+	I2CMasterBuffer[2] 	= 0b00000000; // wakeup
 
 	state = I2CEngine();
 	if(state != I2C_OK) return 1;
@@ -52,7 +62,7 @@ uint8_t MPU6050_init() {
 	I2CReadLength		= 0;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_CONFIG;
-	I2CMasterBuffer[2] 	= 0b00001000; // 4G range
+	I2CMasterBuffer[2] 	= 0b00011000; // 16G range
 
 	state = I2CEngine();
 	if(state != I2C_OK) return 1;
@@ -209,7 +219,7 @@ float MPU6050_getAccel_x(){
 	if(state != I2C_OK) return 1;
 
 	tmp |= (I2CSlaveBuffer[0]) ;
-	x = (float) tmp / 8192;
+	x = (float) tmp / 2048;
 	return x - zero_acc_x ;
 }
 
@@ -240,6 +250,6 @@ float MPU6050_getAccel_z(){
 	if(state != I2C_OK) return 1;
 
 	tmp |= (I2CSlaveBuffer[0]) ;
-	z = (float) tmp / 8192;
+	z = (float) tmp / 2048;
 	return z - zero_acc_z; /* TBD */
 }
