@@ -50,6 +50,14 @@ void init_Gyro1DKalman(struct Gyro1DKalman *filterdata, float Q_angle, float Q_g
 	filterdata->Q_angle = Q_angle;
 	filterdata->Q_gyro  = Q_gyro;
 	filterdata->R_angle = R_angle;
+
+	filterdata->x_angle = 0;
+
+	filterdata->P_00 = 0;
+	filterdata->P_01 = 0;
+	filterdata->P_10 = 0;
+	filterdata->P_11 = 0;
+	filterdata->x_bias = 0;
 }
 
 /*
@@ -70,7 +78,7 @@ void init_Gyro1DKalman(struct Gyro1DKalman *filterdata, float Q_angle, float Q_g
  *
  *   = [ 1 -dt, 0 1 ] * P * [ 1 0, -dt 1 ] + Q
  *
- *  P(0,0) = P(0,0) - dt * ( P(1,0) + P(0,1) ) + dt² * P(1,1) + Q(0,0)
+ *  P(0,0) = P(0,0) - dt * ( P(1,0) + P(0,1) ) + dtï¿½ * P(1,1) + Q(0,0)
  *  P(0,1) = P(0,1) - dt * P(1,1) + Q(0,1)
  *  P(1,0) = P(1,0) - dt * P(1,1) + Q(1,0)
  *  P(1,1) = P(1,1) + Q(1,1)

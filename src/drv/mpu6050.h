@@ -138,5 +138,7 @@ uint8_t MPU6050_init();
 uint8_t MPU6050_whoami();
 uint8_t MPU6050_getValue(sMPU_Value *sValue);
 float   MPU6050_getGyroRoll_rad();
-float 	MPU6050_getAccel_y();
+float   MPU6050_getGyroRoll_degree();
+float 	MPU6050_getAccel_x();
 float 	MPU6050_getAccel_z();
+void    MPU6050_setZero();
