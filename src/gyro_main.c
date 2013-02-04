@@ -128,7 +128,11 @@ int main (void){
 			tmp = integral_tmp/0.25;
 			true_angle_quater += 0.25 * tmp;
 
-
+			if(fabsf(servo_angle - true_angle_quater) >= dMIN_ANGLE){
+				/* set servo to new angle */
+				servo_angle = true_angle_quater;
+				/* implement function here */
+			}
 
 
 
