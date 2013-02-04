@@ -18,12 +18,14 @@
 
 
 uint8_t gSysTick = 0;
-uint8_t gSysTick_100 = 0;
+uint8_t gSysTick_20 = 0;
+uint16_t gSysTick_1000 = 0;
 uint8_t led_toggle = 0;
 
 void SysTick_Handler(void){
 	gSysTick++;
-	gSysTick_100++;
+	gSysTick_20++;
+	gSysTick_1000++;
 }
 
 float get_Time_s(void){
@@ -34,10 +36,10 @@ float get_Time_s(void){
 
 int main (void){
 
-	struct Gyro1DKalman filter_roll;
 	float dt;
 
-	float acc_x_buff, acc_z_buff,acc_x, acc_z, gyro_x, drift;
+	float acc_x_buff, acc_z_buff,acc_x, acc_z, gyro_x;
+	float drift = 0;
 	float acc_angle, gyro_angle, kal_angle, drift_buf, true_angle;
 
 	uint8_t string[80];
@@ -60,7 +62,7 @@ int main (void){
 	CLKOUT_Setup(CLKOUTCLK_SRC_MAIN_CLK);
 	*/
 
-	UARTInit(UART_BAUD); // 115200;
+	UARTInit(UART_BAUD); // 19200;
 
 	if(I2CInit(I2CMASTER) == FALSE){
 	  while(1);	/* fatal error */
@@ -77,34 +79,44 @@ int main (void){
 	MPU6050_setZero();
 	GPIOSetValue( LED_ON );
 
-	/*kalman form http://tom.pycke.be/ */
-	//init_Gyro1DKalman(&filter_roll,0.0001, 0.003,0.1);
 	kalman_init();
 	drift_cnt = 0;
 	while(1){
-		dt = get_Time_s();
+		GPIOSetValue( LED_ON );
+		/* 50Hz loop */
+		if(gSysTick_20 >= 19){
+			gSysTick_20 = 0;
+			GPIOSetValue( LED_OFF );
+			/* get sensor values */
+			gyro_x = MPU6050_getGyroRoll_degree();
+			acc_x = MPU6050_getAccel_x();
+			acc_z = MPU6050_getAccel_z();
 
-		gyro_x = MPU6050_getGyroRoll_degree();
-		//ars_predict(&filter_roll, gyro_x, dt);  // Kalman predict
-		acc_x = MPU6050_getAccel_x();
-		acc_z = MPU6050_getAccel_z();
-		acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
-	   // kal_angle = ars_update(&filter_roll, acc_angle);        // Kalman update + result (angle)
-		kal_angle = kalman_update(acc_angle,gyro_x, dt);
-		drift_buf += (kal_angle-gyro_angle);
-		drift_cnt++;
-		if(drift_cnt == 20){
-			drift = drift_buf / 20;
-			drift_buf = 0;
-			drift_cnt = 0;
+			/* acc angle */
+			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
+			/* kalman angle */
+			kal_angle = kalman_update(acc_angle,gyro_x, 0.02);
+			/* gyro angle */
+			gyro_angle += (gyro_x) * 0.02;
+
+			/* drift compensation */
+			drift_buf += (gyro_angle - kal_angle);
+			drift_cnt++;
+			if(drift_cnt == 10){
+				drift = drift_buf / 10;
+				drift_buf = 0;
+				drift_cnt = 0;
+			}
+			true_angle = gyro_angle - drift;
+
+
+			/* 10 Hz loop */
+			if(gSysTick_1000 >= 999){
+				// sprintf(string,"$1;1;;%f;%f;%f;\r\n",acc_angle, gyro_angle, kal_angle);
+				sprintf(string,"%f;%f;%f;	Gyro:%f; True:%f; \n\r",acc_angle,kal_angle,drift,		gyro_angle, true_angle);
+				UARTSend ((uint8_t *) string,80);
+				gSysTick_1000 = 0;
+			}
 		}
-		gyro_angle += (gyro_x) * dt;
-		true_angle = gyro_angle + drift * 0.7;
-	   // sprintf(string,"$1;1;;%f;%f;%f;\r\n",acc_angle, gyro_angle, kal_angle);
-		sprintf(string,"%f;  %f;  %f;  %f; %f; \n\r",acc_angle,gyro_angle,kal_angle,true_angle, drift);
-		//itoa(acc_y,char_acc_y,10);
-	    UARTSend ((uint8_t *) string,80);
-	    gSysTick_100 = 0;
-
 	}
 }

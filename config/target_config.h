@@ -6,4 +6,4 @@
 #define LED_OFF LED_PORT,LED_BIT,0		// Level to set port to turn off led
 
 #define MPU6050_ADRESS	0xD0
-#define UART_BAUD 		19200
+#define UART_BAUD 		115200
