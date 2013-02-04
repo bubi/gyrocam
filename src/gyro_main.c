@@ -36,9 +36,8 @@ float get_Time_s(void){
 
 int main (void){
 
-	float dt;
 
-	float acc_x_buff, acc_z_buff,acc_x, acc_z, gyro_x;
+	float acc_x, acc_z, gyro_x;
 	float drift = 0;
 	float acc_angle, gyro_angle, kal_angle, drift_buf, true_angle;
 
@@ -109,14 +108,14 @@ int main (void){
 			}
 			true_angle = gyro_angle - drift;
 
-
+#ifdef DEBUG_OUTPUT
 			/* 10 Hz loop */
-			if(gSysTick_1000 >= 999){
-				// sprintf(string,"$1;1;;%f;%f;%f;\r\n",acc_angle, gyro_angle, kal_angle);
+			if(gSysTick_1000 >= (DEBUG_TIME_MS - 1)){
 				sprintf(string,"%f;%f;%f;	Gyro:%f; True:%f; \n\r",acc_angle,kal_angle,drift,		gyro_angle, true_angle);
 				UARTSend ((uint8_t *) string,80);
 				gSysTick_1000 = 0;
 			}
+#endif
 		}
 	}
 }

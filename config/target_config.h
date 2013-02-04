@@ -7,3 +7,6 @@
 
 #define MPU6050_ADRESS	0xD0
 #define UART_BAUD 		115200
+
+#define DEBUG_OUTPUT
+#define DEBUG_TIME_MS	100 // max 1s
