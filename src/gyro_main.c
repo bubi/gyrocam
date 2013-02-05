@@ -91,15 +91,10 @@ int main (void){
 			GPIOSetValue( LED_OFF );
 
 			/* get sensor values */
-<<<<<<< HEAD
+
 			gyro_x 	= MPU6050_getGyroRoll_degree();
 			acc_x 	= MPU6050_getAccel_x();
 			acc_z 	= MPU6050_getAccel_z();
-=======
-			gyro_x = MPU6050_getGyroRoll_degree();
-			acc_x  = MPU6050_getAccel_x();
-			acc_z  = MPU6050_getAccel_z();
->>>>>>> 6efffc60f4d62dd2d57baa4ee41af5860eb9debd
 
 			/* acc angle */
 			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
