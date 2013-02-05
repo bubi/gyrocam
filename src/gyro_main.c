@@ -14,7 +14,7 @@
 
 #include "mpu6050.h"
 #include "kalman.h"
-#include "ars.h"
+
 
 
 uint8_t gSysTick = 0;
@@ -40,6 +40,9 @@ int main (void){
 	float acc_x, acc_z, gyro_x;
 	float drift = 0;
 	float acc_angle, gyro_angle, kal_angle, drift_buf, true_angle;
+	float true_angle_round, true_angle_quater, integral_tmp;
+	uint8_t tmp;
+	float servo_angle = 0;
 
 	uint8_t string[80];
 
@@ -88,9 +91,15 @@ int main (void){
 			GPIOSetValue( LED_OFF );
 
 			/* get sensor values */
+<<<<<<< HEAD
 			gyro_x 	= MPU6050_getGyroRoll_degree();
 			acc_x 	= MPU6050_getAccel_x();
 			acc_z 	= MPU6050_getAccel_z();
+=======
+			gyro_x = MPU6050_getGyroRoll_degree();
+			acc_x  = MPU6050_getAccel_x();
+			acc_z  = MPU6050_getAccel_z();
+>>>>>>> 6efffc60f4d62dd2d57baa4ee41af5860eb9debd
 
 			/* acc angle */
 			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
@@ -110,6 +119,31 @@ int main (void){
 			}
 			/* true angle calculated from gyro + drift calculateD from filtered kalman output */
 			true_angle = gyro_angle - drift;
+
+			/* cut of to XX.xx
+			 * zB: 10.0345785°
+			 * *100 = 1003.45785
+			 * ceil() = 1004
+			 * :100 = 10.04
+			 */
+			true_angle_round = ceilf((true_angle * 100))/100;
+			/* 10.04 ->
+			 * angle_tmp = 0.04
+			 * true_angle_quater = 10
+			 */
+			true_angle_quater = modf(true_angle_round, &integral_tmp);
+			/* calculate quater */
+			/* 10.0 (10.25, 10.50, 10.75)*/
+			tmp = integral_tmp/0.25;
+			true_angle_quater += 0.25 * tmp;
+
+			if(fabsf(servo_angle - true_angle_quater) >= dMIN_ANGLE){
+				/* set servo to new angle */
+				servo_angle = true_angle_quater;
+				/* implement function here */
+			}
+
+
 
 #ifdef DEBUG_OUTPUT
 			/* 10 Hz loop */
