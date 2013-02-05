@@ -41,7 +41,7 @@ int main (void){
 
 	float acc_x, acc_z, gyro_x;
 	float drift = 0;
-	float acc_angle, gyro_angle,gyro_angle_last, kal_angle,kal_angle_filtered, kal_angle_buf, kal_angle_last, drift_last, true_angle;
+	float acc_angle, gyro_angle,gyro_angle_last, kal_angle,kal_angle_filtered, kal_angle_buf, kal_angle_last, drift_filtered, true_angle;
 	float true_angle_round, true_angle_quater, integral_tmp, tmp;
 	float servo_angle = 0;
 
@@ -101,10 +101,10 @@ int main (void){
 			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
 			/* kalman angle */
 			kal_angle_last = kal_angle;
-			kal_angle = kalman_update(acc_angle,gyro_x, 0.02);
+			kal_angle = kalman_update(acc_angle,gyro_x, 0.016);
 			/* gyro angle*/
 			gyro_angle_last = gyro_angle;
-			gyro_angle += (gyro_x) * 0.02;
+			gyro_angle += (gyro_x) * 0.016;
 
 			/* drift compensation */
 			/* lowpass for kalman output */
@@ -119,20 +119,18 @@ int main (void){
 
 			drift = gyro_angle - kal_angle_filtered;
 
-			/* true angle calculated from gyro + drift calculateD from filtered kalman output */
-			if((fabsf(gyro_angle_last - gyro_angle) > 2)){
-				/* angle change seems to be greater then 1° so use most actual data */
-				true_angle = gyro_angle - drift;
-				drift_last = drift;
-			}else{
-				/* angle change seems small, so trust gyro and hold angle in place */
-				/* check if kalman is stable */
+			if((fabsf(gyro_angle_last - gyro_angle) < 2)){
+				/* check if kalman is stable enough*/
 				if(fabsf(kal_angle_last - kal_angle_filtered) < 0.5){
 					/* trust him and update drift modifier*/
-					drift_last = drift;
+					drift_filtered = drift;
+					/* if its realy stable, we correct the acutal gyro pos */
+					if(fabsf(kal_angle_last - kal_angle_filtered) < 0.1){
+						gyro_angle = kal_angle_filtered;
+					}
 				}
 				/* use delta - filtered drift */
-				true_angle = gyro_angle - drift_last;
+				true_angle = gyro_angle - drift_filtered;
 			}
 			/* cut of to XX.xx
 			 * zB: 10.0345785°
@@ -163,7 +161,7 @@ int main (void){
 			/* 10 Hz loop */
 			if(gSysTick_1000 >= (DEBUG_TIME_MS - 1)){
 #ifndef DUMP
-				sprintf(string,"%f;%f;%f;	Servo:%f; True:%f; \n\r",kal_angle_filtered,gyro_angle,drift_last,		 servo_angle, true_angle_quater);
+				sprintf(string,"%f;%f;%f;	Servo:%f; True:%f; \n\r",kal_angle_filtered,gyro_angle,drift_filtered,		 servo_angle, true_angle_quater);
 				UARTSend ((uint8_t *) string,80);
 				gSysTick_1000 = 0;
 #endif
