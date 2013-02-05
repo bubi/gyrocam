@@ -25,7 +25,7 @@ uint8_t MPU6050_init() {
 	I2CReadLength		= 0;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_PWR_MGMT_1;
-	I2CMasterBuffer[2] 	= 0b00000000; // reset device;
+	I2CMasterBuffer[2] 	= 0b00000010; // reset device y-axis gyro as clk;
 
 	state = I2CEngine();
 	if(state != I2C_OK) return 1;
@@ -34,7 +34,7 @@ uint8_t MPU6050_init() {
 	I2CReadLength		= 0;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_CONFIG;
-	I2CMasterBuffer[2] 	= 0b00000000; // Lowpass
+	I2CMasterBuffer[2] 	= 0b00000011; // Lowpass
 	//I2CMasterBuffer[2] 	= 0b00000011; // Lowpass
 	state = I2CEngine();
 	if(state != I2C_OK) return 1;

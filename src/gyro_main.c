@@ -22,6 +22,8 @@ uint8_t gSysTick_20 = 0;
 uint16_t gSysTick_1000 = 0;
 uint8_t led_toggle = 0;
 
+float dump[4][100];
+
 void SysTick_Handler(void){
 	gSysTick++;
 	gSysTick_20++;
@@ -39,13 +41,13 @@ int main (void){
 
 	float acc_x, acc_z, gyro_x;
 	float drift = 0;
-	float acc_angle, gyro_angle,gyro_angle_last, kal_angle, kal_angle_last, drift_buf, drift_last, true_angle;
+	float acc_angle, gyro_angle,gyro_angle_last, kal_angle,kal_angle_filtered, kal_angle_buf, kal_angle_last, drift_last, true_angle;
 	float true_angle_round, true_angle_quater, integral_tmp, tmp;
 	float servo_angle = 0;
 
 	uint8_t string[80];
 
-	uint8_t i, drift_cnt;
+	uint8_t i,n, lowpass_cnt;
 
 	for(i=0;i<80;i++)string[i]=0;
 	/* Init Systick to 1ms */
@@ -81,7 +83,7 @@ int main (void){
 	GPIOSetValue( LED_ON );
 
 	kalman_init();
-	drift_cnt = 0;
+	lowpass_cnt = 0;
 	while(1){
 		GPIOSetValue( LED_ON );
 		/* 50Hz loop */
@@ -101,29 +103,31 @@ int main (void){
 			kal_angle_last = kal_angle;
 			kal_angle = kalman_update(acc_angle,gyro_x, 0.02);
 			/* gyro angle*/
-
+			gyro_angle_last = gyro_angle;
 			gyro_angle += (gyro_x) * 0.02;
 
 			/* drift compensation */
 			/* lowpass for kalman output */
-			drift_buf += (gyro_angle - kal_angle);
-			drift_cnt++;
-			if(drift_cnt == 10){
-				drift = drift_buf / 10;
-				drift_buf = 0;
-				drift_cnt = 0;
+			kal_angle_buf += kal_angle;
+			lowpass_cnt++;
+			if(lowpass_cnt == 10){
+				kal_angle_last = kal_angle_filtered;
+				kal_angle_filtered = kal_angle_buf / 10;
+				kal_angle_buf = 0;
+				lowpass_cnt = 0;
 			}
 
+			drift = gyro_angle - kal_angle_filtered;
+
 			/* true angle calculated from gyro + drift calculateD from filtered kalman output */
-			if((fabsf(gyro_angle_last - gyro_angle) > 1)){
-				/* angle change seems to be greater then 1° so use moste actual data */
+			if((fabsf(gyro_angle_last - gyro_angle) > 2)){
+				/* angle change seems to be greater then 1° so use most actual data */
 				true_angle = gyro_angle - drift;
 				drift_last = drift;
-				gyro_angle_last = gyro_angle;
 			}else{
 				/* angle change seems small, so trust gyro and hold angle in place */
 				/* check if kalman is stable */
-				if(fabsf(kal_angle_last - kal_angle) < 1){
+				if(fabsf(kal_angle_last - kal_angle_filtered) < 0.5){
 					/* trust him and update drift modifier*/
 					drift_last = drift;
 				}
@@ -158,8 +162,26 @@ int main (void){
 #ifdef DEBUG_OUTPUT
 			/* 10 Hz loop */
 			if(gSysTick_1000 >= (DEBUG_TIME_MS - 1)){
-				sprintf(string,"%f;%f;%f;	Servo:%f; True:%f; \n\r",acc_angle,kal_angle,gyro_angle,		 servo_angle, true_angle);
+#ifndef DUMP
+				sprintf(string,"%f;%f;%f;	Servo:%f; True:%f; \n\r",kal_angle_filtered,gyro_angle,drift_last,		 servo_angle, true_angle_quater);
 				UARTSend ((uint8_t *) string,80);
+				gSysTick_1000 = 0;
+#endif
+#ifdef DUMP
+				if(n<100){
+					dump[0][n] = acc_angle;
+					dump[1][n] = gyro_angle;
+					dump[2][n] = true_angle;
+					dump[3][n] = servo_angle;
+					n++;
+				}else{
+					for(n = 0;n<100;n++){
+						sprintf(string, "%f;%f;%f;%f \n\r",dump[0][n],dump[1][n],dump[2][n],dump[3][n]);
+						UARTSend ((uint8_t *) string,80);
+					}
+					n = 0;
+				}
+#endif
 				gSysTick_1000 = 0;
 			}
 #endif
