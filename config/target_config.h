@@ -9,6 +9,7 @@
 #define UART_BAUD 		115200
 
 #define DEBUG_OUTPUT
+//#define DUMP
 #define DEBUG_TIME_MS	100 // max 1s
 
-#define dMIN_ANGLE		1
+#define dMIN_ANGLE		0.5
