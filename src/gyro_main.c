@@ -86,10 +86,11 @@ int main (void){
 		if(gSysTick_20 >= 19){
 			gSysTick_20 = 0;
 			GPIOSetValue( LED_OFF );
+
 			/* get sensor values */
-			gyro_x = MPU6050_getGyroRoll_degree();
-			acc_x = MPU6050_getAccel_x();
-			acc_z = MPU6050_getAccel_z();
+			gyro_x 	= MPU6050_getGyroRoll_degree();
+			acc_x 	= MPU6050_getAccel_x();
+			acc_z 	= MPU6050_getAccel_z();
 
 			/* acc angle */
 			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
@@ -99,6 +100,7 @@ int main (void){
 			gyro_angle += (gyro_x) * 0.02;
 
 			/* drift compensation */
+			/* lowpass for kalman output */
 			drift_buf += (gyro_angle - kal_angle);
 			drift_cnt++;
 			if(drift_cnt == 10){
@@ -106,6 +108,7 @@ int main (void){
 				drift_buf = 0;
 				drift_cnt = 0;
 			}
+			/* true angle calculated from gyro + drift calculateD from filtered kalman output */
 			true_angle = gyro_angle - drift;
 
 #ifdef DEBUG_OUTPUT
