@@ -39,7 +39,7 @@ int main (void){
 
 	float acc_x, acc_z, gyro_x;
 	float drift = 0;
-	float acc_angle, gyro_angle, kal_angle, drift_buf, true_angle;
+	float acc_angle, gyro_angle,gyro_angle_last, kal_angle, kal_angle_last, drift_buf, drift_last, true_angle;
 	float true_angle_round, true_angle_quater, integral_tmp, tmp;
 	float servo_angle = 0;
 
@@ -98,8 +98,10 @@ int main (void){
 			/* acc angle */
 			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
 			/* kalman angle */
+			kal_angle_last = kal_angle;
 			kal_angle = kalman_update(acc_angle,gyro_x, 0.02);
-			/* gyro angle */
+			/* gyro angle*/
+
 			gyro_angle += (gyro_x) * 0.02;
 
 			/* drift compensation */
@@ -111,9 +113,23 @@ int main (void){
 				drift_buf = 0;
 				drift_cnt = 0;
 			}
-			/* true angle calculated from gyro + drift calculateD from filtered kalman output */
-			true_angle = gyro_angle - drift;
 
+			/* true angle calculated from gyro + drift calculateD from filtered kalman output */
+			if((fabsf(gyro_angle_last - gyro_angle) > 1)){
+				/* angle change seems to be greater then 1° so use moste actual data */
+				true_angle = gyro_angle - drift;
+				drift_last = drift;
+				gyro_angle_last = gyro_angle;
+			}else{
+				/* angle change seems small, so trust gyro and hold angle in place */
+				/* check if kalman is stable */
+				if(fabsf(kal_angle_last - kal_angle) < 1){
+					/* trust him and update drift modifier*/
+					drift_last = drift;
+				}
+				/* use delta - filtered drift */
+				true_angle = gyro_angle - drift_last;
+			}
 			/* cut of to XX.xx
 			 * zB: 10.0345785°
 			 * *100 = 1003.45785
@@ -142,7 +158,7 @@ int main (void){
 #ifdef DEBUG_OUTPUT
 			/* 10 Hz loop */
 			if(gSysTick_1000 >= (DEBUG_TIME_MS - 1)){
-				sprintf(string,"%f;%f;%f;	Gyro:%f; True:%f; \n\r",acc_angle,kal_angle,drift,		gyro_angle, servo_angle);
+				sprintf(string,"%f;%f;%f;	Servo:%f; True:%f; \n\r",acc_angle,kal_angle,gyro_angle,		 servo_angle, true_angle);
 				UARTSend ((uint8_t *) string,80);
 				gSysTick_1000 = 0;
 			}
