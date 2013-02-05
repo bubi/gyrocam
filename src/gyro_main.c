@@ -40,8 +40,7 @@ int main (void){
 	float acc_x, acc_z, gyro_x;
 	float drift = 0;
 	float acc_angle, gyro_angle, kal_angle, drift_buf, true_angle;
-	float true_angle_round, true_angle_quater, integral_tmp;
-	uint8_t tmp;
+	float true_angle_round, true_angle_quater, integral_tmp, tmp;
 	float servo_angle = 0;
 
 	uint8_t string[80];
@@ -123,14 +122,14 @@ int main (void){
 			 */
 			true_angle_round = ceilf((true_angle * 100))/100;
 			/* 10.04 ->
-			 * angle_tmp = 0.04
-			 * true_angle_quater = 10
+			 * tmp = 0.04
 			 */
-			true_angle_quater = modf(true_angle_round, &integral_tmp);
+			tmp = modf(true_angle_round, &integral_tmp);
 			/* calculate quater */
-			/* 10.0 (10.25, 10.50, 10.75)*/
-			tmp = integral_tmp/0.25;
-			true_angle_quater += 0.25 * tmp;
+			/* 10.0 (10.25, 10.50, 10.75)
+			 * 10.04 = uint32t 10*/
+			tmp = (int32_t) (tmp/0.25);
+			true_angle_quater =((int32_t) true_angle_round) + 0.25 * tmp;
 
 			if(fabsf(servo_angle - true_angle_quater) >= dMIN_ANGLE){
 				/* set servo to new angle */
@@ -143,7 +142,7 @@ int main (void){
 #ifdef DEBUG_OUTPUT
 			/* 10 Hz loop */
 			if(gSysTick_1000 >= (DEBUG_TIME_MS - 1)){
-				sprintf(string,"%f;%f;%f;	Gyro:%f; True:%f; \n\r",acc_angle,kal_angle,drift,		gyro_angle, true_angle);
+				sprintf(string,"%f;%f;%f;	Gyro:%f; True:%f; \n\r",acc_angle,kal_angle,drift,		gyro_angle, servo_angle);
 				UARTSend ((uint8_t *) string,80);
 				gSysTick_1000 = 0;
 			}
