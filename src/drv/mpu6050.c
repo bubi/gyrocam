@@ -54,7 +54,7 @@ uint8_t MPU6050_init() {
 	I2CReadLength		= 0;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_CONFIG;
-	I2CMasterBuffer[2] 	= 0b00000000; // gyro range defaults to °/s but for future use
+	I2CMasterBuffer[2] 	= 0b00001000; // gyro range 600°/s
 
 	state = I2CEngine();
 	if(state != I2C_OK) return 1;
@@ -153,7 +153,7 @@ float MPU6050_getGyroRoll_degree(){
 	float y;
 
 	tmp = MPU6050_getGyroRoll_raw();
-	y = (tmp / 131 );
+	y = (tmp / 65.5 );
 	return y;
 }
 
@@ -163,7 +163,7 @@ float MPU6050_getGyroRoll_rad(){
 	float y;
 
 	tmp = MPU6050_getGyroRoll_raw();
-	y = (float) ((tmp / 131) * 3.14159) / 180;
+	y = (float) ((tmp / 65.5) * 3.14159) / 180;
 	return y ;
 }
 

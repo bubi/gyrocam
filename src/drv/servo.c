@@ -41,5 +41,5 @@ void SERVO_set(float angle){
 	tmp = (angle + SERVO_MAX_ANGLE/2) * (1000/SERVO_MAX_ANGLE);
 	tmp = tmp * TIMER_1US;
 	match = (uint32_t) tmp + SERVO_MAX_R;
-	LPC_TMR32B1->MR1 = match;
+	LPC_TMR32B1->MR1 = SERVO_PERIODE - match;
 }

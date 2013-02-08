@@ -13,10 +13,11 @@
 #define SERVO_ZERO 	  		(SERVO_PERIODE - (TIMER_1US * 1500))
 #define SERVO_MAX_L			(SERVO_PERIODE - (TIMER_1US * 1000))
 #define SERVO_MAX_R			(SERVO_PERIODE - (TIMER_1US * 2000))
-#define SERVO_MAX_ANGLE		120
+#define SERVO_MAX_ANGLE		60
+#define dMIN_ANGLE		0
 
-#define DEBUG_OUTPUT
+
+//#define DEBUG_OUTPUT
 //#define DUMP
 #define DEBUG_TIME_MS	100 // max 1s
 
-#define dMIN_ANGLE		1
