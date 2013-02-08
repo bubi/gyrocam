@@ -12,6 +12,7 @@
 #include "type.h"
 #include "clkconfig.h"
 
+#include "servo.h"
 #include "mpu6050.h"
 #include "kalman.h"
 
@@ -80,6 +81,8 @@ int main (void){
 	}
 
 	MPU6050_setZero();
+	SERVO_init();
+
 	GPIOSetValue( LED_ON );
 
 	kalman_init();
@@ -153,6 +156,7 @@ int main (void){
 				/* set servo to new angle */
 				servo_angle = true_angle_quater;
 				/* implement function here */
+				SERVO_set(servo_angle);
 			}
 
 

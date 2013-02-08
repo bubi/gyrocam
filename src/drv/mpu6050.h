@@ -8,6 +8,10 @@
  * register map see datasheet or (better) http://www.i2cdevlib.com/devices/mpu6050#registers
  */
 
+#ifndef MPU6050_H_
+#define MPU6050_H_
+
+
 
 #include "type.h"
 
@@ -145,3 +149,5 @@ int16_t 	MPU6050_getAccel_z_raw();
 float 		MPU6050_getAccel_x();
 float 		MPU6050_getAccel_z();
 void    	MPU6050_setZero();
+
+#endif /* MPU6050_H_ */
