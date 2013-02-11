@@ -25,7 +25,7 @@ uint8_t MPU6050_init() {
 	I2CReadLength		= 0;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
 	I2CMasterBuffer[1] 	= MPU6050_RA_PWR_MGMT_1;
-	I2CMasterBuffer[2] 	= 0b00000010; // reset device y-axis gyro as clk;
+	I2CMasterBuffer[2] 	= 0b00000001; // reset device y-axis gyro as clk;
 
 	state = I2CEngine();
 	if(state != I2C_OK) return 1;
@@ -127,7 +127,7 @@ int16_t MPU6050_getGyroRoll_raw(){
 	I2CWriteLength 		= 2;
 	I2CReadLength		= 1;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_YOUT_H;
+	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_ZOUT_H;
 	I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 	state = I2CEngine();
@@ -138,7 +138,7 @@ int16_t MPU6050_getGyroRoll_raw(){
 	I2CWriteLength 		= 2;
 	I2CReadLength		= 1;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_YOUT_L;
+	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_ZOUT_L;
 	I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 	state = I2CEngine();
@@ -150,21 +150,21 @@ int16_t MPU6050_getGyroRoll_raw(){
 float MPU6050_getGyroRoll_degree(){
 
 	int16_t tmp;
-	float y;
+	float roll;
 
 	tmp = MPU6050_getGyroRoll_raw();
-	y = (tmp / 65.5 );
-	return y;
+	roll = (tmp / 65.5 );
+	return roll;
 }
 
 float MPU6050_getGyroRoll_rad(){
 
 	int16_t tmp;
-	float y;
+	float roll;
 
 	tmp = MPU6050_getGyroRoll_raw();
-	y = (float) ((tmp / 65.5) * 3.14159) / 180;
-	return y ;
+	roll = (float) ((tmp / 65.5) * 3.14159) / 180;
+	return roll ;
 }
 
 int16_t MPU6050_getAccel_x_raw(){
@@ -214,7 +214,7 @@ int16_t MPU6050_getAccel_z_raw(){
 		I2CWriteLength 		= 2;
 		I2CReadLength		= 1;
 		I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-		I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_ZOUT_H;
+		I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_YOUT_H;
 		I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 		state = I2CEngine();
@@ -225,7 +225,7 @@ int16_t MPU6050_getAccel_z_raw(){
 		I2CWriteLength 		= 2;
 		I2CReadLength		= 1;
 		I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-		I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_ZOUT_L;
+		I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_YOUT_L;
 		I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 		state = I2CEngine();

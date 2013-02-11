@@ -80,6 +80,21 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.1584568070.619406981" name="/" resourcePath="driver">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1404581416" name="Code Red MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF;org.eclipse.cdt.core.GNU_ELF" id="com.crt.advproject.platform.exe.debug" name="ARM-based MCU (Debug)" superClass="com.crt.advproject.platform.exe.debug"/>
+							<tool id="com.crt.advproject.cpp.exe.debug.251827104" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.147207195"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.611531108" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1507794419">
+								<option id="com.crt.advproject.gcc.exe.debug.option.debugging.level.1506196054" name="Debug Level" superClass="com.crt.advproject.gcc.exe.debug.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+								<inputType id="com.crt.advproject.compiler.input.497123180" superClass="com.crt.advproject.compiler.input"/>
+							</tool>
+							<tool id="com.crt.advproject.gas.exe.debug.1252135406" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.1492544946">
+								<inputType id="com.crt.advproject.assembler.input.1767160883" name="Additional Assembly Source Files" superClass="com.crt.advproject.assembler.input"/>
+							</tool>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.1854894292" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1765994721"/>
+							<tool id="com.crt.advproject.link.exe.debug.1787710786" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.1903724699"/>
+						</toolChain>
+					</folderInfo>
 					<fileInfo id="com.crt.advproject.config.exe.debug.1584568070.57842801" name="system_LPC11xx.c" rcbsApplicability="disable" resourcePath="cmsis/system_LPC11xx.c" toolsToInvoke="com.crt.advproject.gcc.exe.debug.1507794419.1957840503">
 						<tool id="com.crt.advproject.gcc.exe.debug.1507794419.1957840503" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1507794419">
 							<option id="gnu.c.compiler.option.optimization.flags.1068624932" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
@@ -94,7 +109,7 @@
 					</fileInfo>
 					<fileInfo id="com.crt.advproject.config.exe.debug.1584568070.726193714" name="gyro_main.c" rcbsApplicability="disable" resourcePath="src/gyro_main.c" toolsToInvoke="com.crt.advproject.gcc.exe.debug.1507794419.2030159236">
 						<tool id="com.crt.advproject.gcc.exe.debug.1507794419.2030159236" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1507794419">
-							<option id="gnu.c.compiler.option.include.paths.997373849" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+							<option id="gnu.c.compiler.option.include.paths.997373849" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 								<listOptionValue builtIn="false" value="../src/kalman"/>
 								<listOptionValue builtIn="false" value="../src/drv"/>
 								<listOptionValue builtIn="false" value="../cmsis"/>
@@ -724,9 +739,12 @@
 								<option id="gnu.c.compiler.option.optimization.flags.1146014295" name="Other optimization flags" superClass="gnu.c.compiler.option.optimization.flags" value="-Os" valueType="string"/>
 								<option id="com.crt.advproject.gcc.hdrlib.727135714" name="Use headers for C library" superClass="com.crt.advproject.gcc.hdrlib" value="com.crt.advproject.gcc.hdrlib.codered" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.include.paths.1173177337" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/kalman}&quot;"/>
 									<listOptionValue builtIn="false" value="../cmsis"/>
 									<listOptionValue builtIn="false" value="../config"/>
 									<listOptionValue builtIn="false" value="../driver"/>
+									<listOptionValue builtIn="false" value="./drv"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/drv}&quot;"/>
 								</option>
 								<inputType id="com.crt.advproject.compiler.input.1866865396" superClass="com.crt.advproject.compiler.input"/>
 							</tool>

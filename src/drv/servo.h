@@ -18,6 +18,7 @@
 
 void SERVO_init(void);
 void SERVO_set(float angle);
+void SERVO_set_slew(float angle);
 
 
 #endif /* SERVO_H_ */

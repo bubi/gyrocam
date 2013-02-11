@@ -58,7 +58,7 @@ int main (void){
 	GPIOInit();
 	/* Set LED port pin to output */
 	GPIOSetDir( LED_PORT, LED_BIT, 1 );
-
+	SERVO_init();
 
 	/*
 	LPC_IOCON->PIO0_1 &= ~0x07;
@@ -81,7 +81,7 @@ int main (void){
 	}
 
 	MPU6050_setZero();
-	SERVO_init();
+
 
 	GPIOSetValue( LED_ON );
 
@@ -90,32 +90,31 @@ int main (void){
 	while(1){
 		GPIOSetValue( LED_ON );
 		/* 50Hz loop */
-		if(gSysTick_20 >= 19){
+		if(gSysTick_20 >= 9){
 			gSysTick_20 = 0;
 			GPIOSetValue( LED_OFF );
 
 			/* get sensor values */
-
 			gyro_x 	= MPU6050_getGyroRoll_degree();
-			acc_x 	= MPU6050_getAccel_x();
+			acc_x 	= -(MPU6050_getAccel_x());
 			acc_z 	= MPU6050_getAccel_z();
 
 			/* acc angle */
 			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
 			/* kalman angle */
 			kal_angle_last = kal_angle;
-			kal_angle = kalman_update(acc_angle,gyro_x, 0.016);
+			kal_angle = kalman_update(acc_angle,gyro_x, 0.01);
 			/* gyro angle*/
 			gyro_angle_last = gyro_angle;
-			gyro_angle += (gyro_x) * 0.016;
+			gyro_angle += (gyro_x) * 0.01;
 
 			/* drift compensation */
 			/* lowpass for kalman output */
 			kal_angle_buf += kal_angle;
 			lowpass_cnt++;
-			if(lowpass_cnt == 10){
+			if(lowpass_cnt == 20){
 				kal_angle_last = kal_angle_filtered;
-				kal_angle_filtered = kal_angle_buf / 10;
+				kal_angle_filtered = kal_angle_buf / 20;
 				kal_angle_buf = 0;
 				lowpass_cnt = 0;
 			}
@@ -135,29 +134,14 @@ int main (void){
 				/* use delta - filtered drift */
 				true_angle = gyro_angle - drift_filtered;
 			}
-			/* cut of to XX.xx
-			 * zB: 10.0345785°
-			 * *100 = 1003.45785
-			 * ceil() = 1004
-			 * :100 = 10.04
-			 */
-			true_angle_round = ceilf((true_angle * 100))/100;
-			/* 10.04 ->
-			 * tmp = 0.04
-			 */
-			tmp = modf(true_angle_round, &integral_tmp);
-			/* calculate quater */
-			/* 10.0 (10.25, 10.50, 10.75)
-			 * 10.04 = uint32t 10*/
-			tmp = (int32_t) (tmp/0.25);
-			true_angle_quater =((int32_t) true_angle_round) + 0.25 * tmp;
 
-			if(fabsf(servo_angle - true_angle_quater) >= dMIN_ANGLE){
+			if(fabsf(servo_angle - true_angle) >= MIN_ANGLE){
 				/* set servo to new angle */
-				servo_angle = true_angle_quater;
-				/* implement function here */
-				SERVO_set(servo_angle);
-			}
+					servo_angle = -(true_angle);
+				}
+				//servo_angle = -true_angle_quater;
+				/* implement function here (4.7 mechanical offset)*/
+			SERVO_set_slew(servo_angle - MECH_OFFSET);
 
 
 
@@ -165,7 +149,7 @@ int main (void){
 			/* 10 Hz loop */
 			if(gSysTick_1000 >= (DEBUG_TIME_MS - 1)){
 #ifndef DUMP
-				sprintf(string,"%f;%f;%f;	Servo:%f; True:%f; \n\r",kal_angle_filtered,gyro_angle,drift_filtered,		 servo_angle, true_angle_quater);
+				sprintf(string,"%f;%f;%f;	Servo:%f; True:%f; \n\r",acc_x,acc_z,gyro_x,		 servo_angle, true_angle_quater);
 				UARTSend ((uint8_t *) string,80);
 				gSysTick_1000 = 0;
 #endif

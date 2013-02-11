@@ -11,6 +11,7 @@
 #include "servo.h"
 #include "timer32.h"
 
+float gLastAngle = 0;
 void SERVO_init(){
 	/* enable timer 1
 	 * periode SystemCoreClock / 1000 -> 1ms * 20 -> 20ms -> 50Hz
@@ -27,7 +28,7 @@ void SERVO_init(){
 	LPC_IOCON->R_PIO1_2 |= 0x03;
 	/* enable PWM control for MAT1 and MAT3 */
 	LPC_TMR32B1->PWMC = (1<<3) | (1<<1);
-	/* set frequency to 50hz (MAT3) */
+	/* set frequency (MAT3) */
 	LPC_TMR32B1->MR3 = SERVO_PERIODE;
 	/* 1.5ms for servo */
 	LPC_TMR32B1->MR1 = SERVO_ZERO;
@@ -38,8 +39,22 @@ void SERVO_set(float angle){
 	uint32_t match;
 	float tmp;
 
-	tmp = (angle + SERVO_MAX_ANGLE/2) * (1000/SERVO_MAX_ANGLE);
+	tmp = (angle + SERVO_MAX_ANGLE/2) * (1400/SERVO_MAX_ANGLE);
 	tmp = tmp * TIMER_1US;
 	match = (uint32_t) tmp + SERVO_MAX_R;
-	LPC_TMR32B1->MR1 = SERVO_PERIODE - match;
+	LPC_TMR32B1->MR1 =  match;
 }
+
+void SERVO_set_slew(float angle){
+	uint32_t match;
+	float tmp;
+
+	angle = gLastAngle + (angle - gLastAngle) / SLEW_RATE;
+	gLastAngle = angle;
+
+	tmp = (angle + SERVO_MAX_ANGLE/2) * (1400/SERVO_MAX_ANGLE);
+	tmp = tmp * TIMER_1US;
+	match = (uint32_t) tmp + SERVO_MAX_R;
+	LPC_TMR32B1->MR1 =  match;
+}
+
