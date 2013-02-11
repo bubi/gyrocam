@@ -19,7 +19,7 @@
 
 
 uint8_t gSysTick = 0;
-uint8_t gSysTick_20 = 0;
+uint8_t gSysTick_10 = 0;
 uint16_t gSysTick_1000 = 0;
 uint8_t led_toggle = 0;
 
@@ -27,7 +27,7 @@ float dump[4][100];
 
 void SysTick_Handler(void){
 	gSysTick++;
-	gSysTick_20++;
+	gSysTick_10++;
 	gSysTick_1000++;
 }
 
@@ -89,9 +89,9 @@ int main (void){
 	lowpass_cnt = 0;
 	while(1){
 		GPIOSetValue( LED_ON );
-		/* 50Hz loop */
-		if(gSysTick_20 >= 9){
-			gSysTick_20 = 0;
+		/* 100Hz loop */
+		if(gSysTick_10 >= 9){
+			gSysTick_10 = 0;
 			GPIOSetValue( LED_OFF );
 
 			/* get sensor values */
@@ -103,10 +103,10 @@ int main (void){
 			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
 			/* kalman angle */
 			kal_angle_last = kal_angle;
-			kal_angle = kalman_update(acc_angle,gyro_x, 0.01);
+			kal_angle = kalman_update(acc_angle,gyro_x, 0.0096);
 			/* gyro angle*/
 			gyro_angle_last = gyro_angle;
-			gyro_angle += (gyro_x) * 0.01;
+			gyro_angle += (gyro_x) * 0.0096;
 
 			/* drift compensation */
 			/* lowpass for kalman output */

@@ -16,7 +16,7 @@
 
 
 #define MIN_ANGLE			1
-#define SLEW_RATE			10
+#define SLEW_RATE			5
 #define MECH_OFFSET			4.7
 
 //#define DEBUG_OUTPUT
