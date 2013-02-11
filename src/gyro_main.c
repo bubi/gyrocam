@@ -103,10 +103,10 @@ int main (void){
 			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
 			/* kalman angle */
 			kal_angle_last = kal_angle;
-			kal_angle = kalman_update(acc_angle,gyro_x, 0.0096);
+			kal_angle = kalman_update(acc_angle,gyro_x, 0.0091);
 			/* gyro angle*/
 			gyro_angle_last = gyro_angle;
-			gyro_angle += (gyro_x) * 0.0096;
+			gyro_angle += (gyro_x) * 0.0091;
 
 			/* drift compensation */
 			/* lowpass for kalman output */
