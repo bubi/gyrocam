@@ -15,8 +15,8 @@
 #define SERVO_MAX_ANGLE		120
 
 
-#define MIN_ANGLE			1
-#define SLEW_RATE			10
+#define MIN_ANGLE			0
+#define SLEW_RATE			5
 #define MECH_OFFSET			0
 
 //#define DEBUG_OUTPUT

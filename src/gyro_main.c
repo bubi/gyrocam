@@ -43,6 +43,7 @@ int main (void){
 	float acc_x, acc_z, gyro_x;
 	float drift = 0;
 	float acc_angle, gyro_angle,gyro_angle_last, kal_angle,kal_angle_filtered, kal_angle_buf, kal_angle_last, drift_filtered, true_angle;
+	float acc_angle_filtered = 0;
 	float true_angle_round, true_angle_quater, integral_tmp, tmp;
 	float servo_angle = 0;
 
@@ -100,48 +101,18 @@ int main (void){
 			acc_z 	= MPU6050_getAccel_z();
 
 			/* acc angle */
-			acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
-			/* kalman angle */
-			kal_angle_last = kal_angle;
-			kal_angle = kalman_update(acc_angle,gyro_x, 0.0091);
-			/* gyro angle*/
-			gyro_angle_last = gyro_angle;
-			gyro_angle += (gyro_x) * 0.0091;
+			acc_angle += atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
 
-			/* drift compensation */
-			/* lowpass for kalman output */
-			kal_angle_buf += kal_angle;
 			lowpass_cnt++;
-			if(lowpass_cnt == 20){
-				kal_angle_last = kal_angle_filtered;
-				kal_angle_filtered = kal_angle_buf / 20;
-				kal_angle_buf = 0;
+			if(lowpass_cnt == 9){
+				acc_angle /= 10;
+				acc_angle_filtered = acc_angle;
 				lowpass_cnt = 0;
 			}
 
-			drift = gyro_angle - kal_angle_filtered;
+			kal_angle = kalman_update(acc_angle_filtered,gyro_x, 0.0093);
 
-			if((fabsf(gyro_angle_last - gyro_angle) < 2)){
-				/* check if kalman is stable enough*/
-				if(fabsf(kal_angle_last - kal_angle_filtered) < 0.5){
-					/* trust him and update drift modifier*/
-					drift_filtered = drift;
-					/* if its realy stable, we correct the acutal gyro pos */
-					if(fabsf(kal_angle_last - kal_angle_filtered) < 0.1){
-						gyro_angle = kal_angle_filtered;
-					}
-				}
-				/* use delta - filtered drift */
-				true_angle = gyro_angle - drift_filtered;
-			}
-
-			if(fabsf(servo_angle - true_angle) >= MIN_ANGLE){
-				/* set servo to new angle */
-					servo_angle = -(true_angle);
-				}
-				//servo_angle = -true_angle_quater;
-				/* implement function here (4.7 mechanical offset)*/
-			SERVO_set_slew(servo_angle - MECH_OFFSET);
+			SERVO_set_slew((-kal_angle) - MECH_OFFSET);
 
 
 
