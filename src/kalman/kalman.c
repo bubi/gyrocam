@@ -8,7 +8,7 @@
 
 
 #include "kalman.h"
-#include "math.h"
+
 
 
 /* Kalman filter variables */
