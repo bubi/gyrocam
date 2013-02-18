@@ -101,23 +101,6 @@ int32_t tmp_raw;
 	zero_gyro_roll = tmp_raw;
 }
 
-uint8_t MPU6050_getValue(sMPU_Value* sValue){
-
-	uint8_t state;
-
-	I2CWriteLength 		= 2;
-	I2CReadLength		= 14;
-	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-	I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_XOUT_H;
-	I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
-
-	state = I2CEngine();
-	if(state != I2C_OK) return 1;
-
-	sValue = I2CSlaveBuffer;
-
-	return 0;
-}
 
 int16_t MPU6050_getGyroRoll_raw(){
 

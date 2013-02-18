@@ -3,16 +3,15 @@
 #include "driver_config.h"
 #include "target_config.h"
 
-#include "gpio.h"
 #include "i2c.h"
 #include "type.h"
-#include "clkconfig.h"
+
 
 #include "servo.h"
 #include "mpu6050.h"
 #include "kalman.h"
 
-#include "math.h"
+#include <math.h>
 
 uint8_t gSysTick_10 = 0;
 
@@ -32,7 +31,7 @@ int main (void){
 	SysTick_Config( SystemCoreClock / 1000);
 
 	/* Initialize GPIO (sets up clock) */
-	GPIOInit();
+	LPC_SYSCON->SYSAHBCLKCTRL |= (1<<6);
 	SERVO_init();
 
 
@@ -60,12 +59,11 @@ int main (void){
 
 			/* get sensor values */
 			gyro_x 	= 	MPU6050_getGyroRoll_degree();
-			acc_x 	= -(MPU6050_getAccel_x());
+			acc_x 	=  -MPU6050_getAccel_x();
 			acc_z 	= 	MPU6050_getAccel_z();
 
 			/* acc angle */
-			//acc_angle = atan2(acc_x, -acc_z) * 180/3.14159 ; // calculate accel angle
-
+			acc_angle = atan2(acc_x , -acc_z) * 180/3.14159 ; // calculate accel angle
 
 			kal_angle = kalman_update(90,gyro_x, 0.0093);
 

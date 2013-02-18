@@ -9,7 +9,7 @@
 #include "target_config.h"
 
 #include "servo.h"
-#include "timer32.h"
+
 
 float gLastAngle = 0;
 void SERVO_init(){
