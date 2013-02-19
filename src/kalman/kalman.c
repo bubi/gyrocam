@@ -36,6 +36,7 @@ void kalman_init(){
 	Q_angle = 0.005;
 	Q_bias = 0.0001;
 	R_measure = 0.1;
+
     bias = 0; // Reset bias
     P[0][0] = 0; // Since we assume tha the bias is 0 and we know the starting angle (use setAngle), the error covariance matrix is set like so - see: http://en.wikipedia.org/wiki/Kalman_filter#Example_application.2C_technical
     P[0][1] = 0;
