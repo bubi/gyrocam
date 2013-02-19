@@ -63,7 +63,6 @@ int main (void){
 			kal_angle = kalman_update(acc_angle,gyro_x, 0.01);
 
 			SERVO_set_slew((-kal_angle) - MECH_OFFSET);
-			//SERVO_set_slew(acc_angle++);
 		}
 	}
 }
