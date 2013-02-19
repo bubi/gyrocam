@@ -13,7 +13,7 @@
 
 #include <math.h>
 
-uint8_t gSysTick_10 = 0;
+volatile uint8_t gSysTick_10 = 0;
 
 
 void SysTick_Handler(void){
@@ -34,13 +34,8 @@ int main (void){
 	LPC_SYSCON->SYSAHBCLKCTRL |= (1<<6);
 	SERVO_init();
 
-
 	if(I2CInit(I2CMASTER) == FALSE){
 	  while(1);	/* fatal error */
-	}
-
-	if(MPU6050_whoami()){
-		return 0;
 	}
 
 	if(MPU6050_init()){
@@ -51,7 +46,7 @@ int main (void){
 
 	kalman_init();
 
-	while(1){
+	for(;;){
 
 		/* 100Hz loop */
 		if(gSysTick_10 >= 9){
@@ -59,15 +54,16 @@ int main (void){
 
 			/* get sensor values */
 			gyro_x 	= 	MPU6050_getGyroRoll_degree();
-			acc_x 	=  -MPU6050_getAccel_x();
-			acc_z 	= 	MPU6050_getAccel_z();
+			acc_x 	=   MPU6050_getAccel_x();
+			acc_z 	= 	-MPU6050_getAccel_z();
 
 			/* acc angle */
 			acc_angle = atan2(acc_x , -acc_z) * 180/3.14159 ; // calculate accel angle
 
-			kal_angle = kalman_update(90,gyro_x, 0.0093);
+			kal_angle = kalman_update(acc_angle,gyro_x, 0.01);
 
 			SERVO_set_slew((-kal_angle) - MECH_OFFSET);
+			//SERVO_set_slew(acc_angle++);
 		}
 	}
 }

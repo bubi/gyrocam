@@ -110,7 +110,7 @@ int16_t MPU6050_getGyroRoll_raw(){
 	I2CWriteLength 		= 2;
 	I2CReadLength		= 1;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_ZOUT_H;
+	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_YOUT_H;
 	I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 	state = I2CEngine();
@@ -121,7 +121,7 @@ int16_t MPU6050_getGyroRoll_raw(){
 	I2CWriteLength 		= 2;
 	I2CReadLength		= 1;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_ZOUT_L;
+	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_YOUT_L;
 	I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 	state = I2CEngine();
@@ -157,7 +157,7 @@ int16_t MPU6050_getAccel_x_raw(){
 	I2CWriteLength 		= 2;
 	I2CReadLength		= 1;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-	I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_XOUT_H;
+	I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_YOUT_H;
 	I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 	state = I2CEngine();
@@ -168,7 +168,7 @@ int16_t MPU6050_getAccel_x_raw(){
 	I2CWriteLength 		= 2;
 	I2CReadLength		= 1;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-	I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_XOUT_L;
+	I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_YOUT_L;
 	I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 	state = I2CEngine();
@@ -197,7 +197,7 @@ int16_t MPU6050_getAccel_z_raw(){
 		I2CWriteLength 		= 2;
 		I2CReadLength		= 1;
 		I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-		I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_YOUT_H;
+		I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_ZOUT_H;
 		I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 		state = I2CEngine();
@@ -208,7 +208,7 @@ int16_t MPU6050_getAccel_z_raw(){
 		I2CWriteLength 		= 2;
 		I2CReadLength		= 1;
 		I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-		I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_YOUT_L;
+		I2CMasterBuffer[1] 	= MPU6050_RA_ACCEL_ZOUT_L;
 		I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 		state = I2CEngine();
