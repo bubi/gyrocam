@@ -92,7 +92,7 @@ uint8_t MPU6050_whoami(){
 void MPU6050_setZero(){
 
 uint16_t i;
-int32_t tmp_raw;
+int32_t tmp_raw = 0;
 
 	for(i=0;i<250;i++){
 		tmp_raw += MPU6050_getGyroRoll_raw();
@@ -110,7 +110,7 @@ int16_t MPU6050_getGyroRoll_raw(){
 	I2CWriteLength 		= 2;
 	I2CReadLength		= 1;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_YOUT_H;
+	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_XOUT_H;
 	I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 	state = I2CEngine();
@@ -121,7 +121,7 @@ int16_t MPU6050_getGyroRoll_raw(){
 	I2CWriteLength 		= 2;
 	I2CReadLength		= 1;
 	I2CMasterBuffer[0] 	= MPU6050_ADRESS;
-	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_YOUT_L;
+	I2CMasterBuffer[1] 	= MPU6050_RA_GYRO_XOUT_L;
 	I2CMasterBuffer[2] 	= MPU6050_ADRESS | RD_BIT;
 
 	state = I2CEngine();

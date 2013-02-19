@@ -25,7 +25,8 @@ int main (void){
 
 
 	float acc_x, acc_z, gyro_x;
-	float gyro_angle,acc_angle,kal_angle,true_angle;
+	float gyro_angle,acc_angle,kal_angle;
+	float true_angle = 0;
 
 	/* Init Systick to 1ms */
 	SysTick_Config( SystemCoreClock / 1000);
@@ -53,8 +54,8 @@ int main (void){
 			gSysTick_10 = 0;
 
 			/* get sensor values */
-			gyro_x 	= 	MPU6050_getGyroRoll_degree();
-			acc_x 	=   MPU6050_getAccel_x();
+			gyro_x 	= 	 MPU6050_getGyroRoll_degree();
+			acc_x 	=    MPU6050_getAccel_x();
 			acc_z 	= 	-MPU6050_getAccel_z();
 
 			/* acc angle */
@@ -64,8 +65,7 @@ int main (void){
 			/* filter */
 			true_angle 	= ((true_angle + gyro_x * 0.01)*0.97) + kal_angle * 0.03;
 
-			SERVO_set_slew((-kal_angle) - MECH_OFFSET);
-			//SERVO_set_slew(acc_angle++);
+			SERVO_set_slew(true_angle - MECH_OFFSET);
 		}
 	}
 }
