@@ -24,9 +24,15 @@ void SysTick_Handler(void){
 int main (void){
 
 
-	float acc_x, acc_z, gyro_x;
-	float gyro_angle,acc_angle,kal_angle;
+	float acc_x = 0;
+	float acc_z = 0;
+	float gyro_x= 0;
+	float acc_angle = 0;
+	float kal_angle = 0;
+	float kal_angle_filtered = 0;
 	float true_angle = 0;
+
+	uint8_t i = 0;
 
 	/* Init Systick to 1ms */
 	SysTick_Config( SystemCoreClock / 1000);
@@ -59,11 +65,12 @@ int main (void){
 			acc_z 	= 	-MPU6050_getAccel_z();
 
 			/* acc angle */
-			acc_angle 	= atan2(acc_x , -acc_z) * 180/3.14159265359 ; 		// calculate accel angle
-			kal_angle 	= kalman_update(acc_angle,gyro_x, 0.01);			// calculate kalman angle
+			acc_angle 	 = atan2(acc_x , -acc_z) * 180/3.14159265359 ; 		// calculate accel angle
+			kal_angle 	 = kalman_update(acc_angle,gyro_x, 0.01);			// calculate kalman angle
+
 
 			/* filter */
-			true_angle 	= ((true_angle + gyro_x * 0.01)*0.97) + kal_angle * 0.03;
+			true_angle 	= ((true_angle + gyro_x * 0.01)*0.995) + kal_angle * 0.005;
 
 			SERVO_set_slew(true_angle - MECH_OFFSET);
 		}

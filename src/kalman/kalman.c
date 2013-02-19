@@ -33,8 +33,8 @@ void kalman_init(){
   //  Q_bias = 0.003;
   //  R_measure = 0.03;
 
-	Q_angle = 0.005;
-	Q_bias = 0.0001;
+	Q_angle = 0.01;
+	Q_bias = 0.003;
 	R_measure = 0.1;
 
     bias = 0; // Reset bias

@@ -16,7 +16,4 @@
 #define SLEW_RATE			5
 #define MECH_OFFSET			0
 
-//#define DEBUG_OUTPUT
-//#define DUMP
-#define DEBUG_TIME_MS	100 // max 1s
 
